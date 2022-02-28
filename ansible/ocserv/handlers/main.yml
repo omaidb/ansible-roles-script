@@ -1,0 +1,6 @@
+---
+# handlers file for ocserv
+
+- name: sysctl
+  shell:
+    cmd: sysctl -p

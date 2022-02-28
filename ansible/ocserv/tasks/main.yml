@@ -1,0 +1,91 @@
+---
+# tasks file for ocserv
+- name: 安装epel源(huaweicloud)-centos7
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://mirrors.huaweicloud.com/epel/7/x86_64
+    gpgcheck: no
+    # 当系统是Centos7时,安装这个epel
+  when: >
+    ansible_machine == ‘x86_64’ 
+    and
+    (ansible_distribution == “RedHat” or ansible_distribution == “Centos”) 
+    and
+    ansible_distribution_major_version == “7”
+
+- name: 安装epel源(huaweicloud)-centos8
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://mirrors.huaweicloud.com/epel/7/x86_64
+    gpgcheck: no
+    # 当系统是Centos7时,安装这个epel
+  when: >
+    ansible_machine == ‘x86_64’ 
+    and
+    (ansible_distribution == “RedHat” or ansible_distribution == “Centos”) 
+    and
+    ansible_distribution_major_version == “8”
+
+- name: 安装主程序
+  yum:
+    name: ocserv
+    state: latest
+
+- name: 开启防火墙服务和ocser服务
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - firewalld
+    - ocserv
+
+- name: 开启防火墙DNAT
+  firewalld:
+    masquerade: yes
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: 放行http和https
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - http
+    - https
+
+- name: 放行udp/443
+  firewalld:
+    port: 443/udp
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: 开启内核数据包转发功能
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: "^net.ipv4.ip_forward"
+    line: net.ipv4.ip_forward = 1
+  notify: sysctl
+
+- name: 将配置文件拷贝到服务器并备份原配置文件
+  copy:
+    src: ocserv.conf
+    dest: /etc/ocserv/ocserv.conf
+    backup: yes
+
+- name: 重启ocserv服务
+  service:
+    name: ocserv
+    state: started
+    enabled: yes
+
+- name: 将本地的用户数据库传输到服务器
+  copy:
+    src: /etc/ocserv/ocpasswd
+    dest: /etc/ocserv/ocpasswd
