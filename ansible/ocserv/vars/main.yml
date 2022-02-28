@@ -1,4 +1,5 @@
 ---
 # vars file for ocserv
 
+# Centos的系统版本号
 os_version: 7

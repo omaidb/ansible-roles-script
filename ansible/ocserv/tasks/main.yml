@@ -6,7 +6,7 @@
     description: EPEL YUM repo
     baseurl: "https://mirrors.huaweicloud.com/epel/{{ os_version }}/x86_64"
     gpgcheck: no
-    # 当系统是Centos7时,安装这个epel
+    # 当系统是Centos时,安装这个epel
   when: >
     ansible_machine == ‘x86_64’ 
     and
