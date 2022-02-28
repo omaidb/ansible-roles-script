@@ -1,2 +1,4 @@
 ---
 # vars file for ocserv
+
+os_version: 7

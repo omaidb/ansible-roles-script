@@ -1,10 +1,10 @@
 ---
 # tasks file for ocserv
-- name: 安装epel源(huaweicloud)-centos7
+- name: 安装epel源(huaweicloud)-centos
   yum_repository:
     name: epel
     description: EPEL YUM repo
-    baseurl: https://mirrors.huaweicloud.com/epel/7/x86_64
+    baseurl: "https://mirrors.huaweicloud.com/epel/{{ os_version }}/x86_64"
     gpgcheck: no
     # 当系统是Centos7时,安装这个epel
   when: >
@@ -12,21 +12,7 @@
     and
     (ansible_distribution == “RedHat” or ansible_distribution == “Centos”) 
     and
-    ansible_distribution_major_version == “7”
-
-- name: 安装epel源(huaweicloud)-centos8
-  yum_repository:
-    name: epel
-    description: EPEL YUM repo
-    baseurl: https://mirrors.huaweicloud.com/epel/7/x86_64
-    gpgcheck: no
-    # 当系统是Centos7时,安装这个epel
-  when: >
-    ansible_machine == ‘x86_64’ 
-    and
-    (ansible_distribution == “RedHat” or ansible_distribution == “Centos”) 
-    and
-    ansible_distribution_major_version == “8”
+    ansible_distribution_major_version == “ {{ os_version }} ”
 
 - name: 安装主程序
   yum:
